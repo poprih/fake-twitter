@@ -1,8 +1,10 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import userDB from '@/db/user'
 import { SignInUp } from '@/enum'
-
+import type { User } from '@/type'
+import fs from 'fs'
+import path from 'path'
+const jsonDirectory = path.join(process.cwd(), 'db');
 
 export type AuthInfo = {
   username: string,
@@ -19,13 +21,16 @@ function loginHandle() {
 
 }
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   if (req.method === 'POST') {
     const { username, password, type } = req.body as AuthInfo
-    const userInfo = userDB.find(_ => _.username === username)
+    const userDBPath = jsonDirectory + '/user.json'
+    const userJson = await fs.readFileSync(userDBPath, 'utf-8');
+    const userDB: User[] = JSON.parse(userJson)
+    const userInfo: User | undefined = userDB.find(_ => _.username === username)
     if (type === SignInUp.Login) {
       if (!userInfo) {
         res.status(200).json({ valid: false, msg: 'User does not exist' })
@@ -45,11 +50,20 @@ export default function handler(
           msg: 'Username has already been taken'
         })
       } else {
-        userDB.push(req.body)
+        const id = userDB.length + 1
+        userDB.push({
+          id,
+          username,
+          password
+        })
+        await fs.writeFileSync(userDBPath, JSON.stringify(userDB))
         res.status(200).json({
           valid: true,
           token: '',
-          msg: 'Sign up successfully'
+          data: {
+            id,
+            username
+          }
         })
       }
     }

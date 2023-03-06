@@ -2,12 +2,15 @@ import React from "react";
 import { FormEvent } from "react";
 import { useRouter } from "next/router";
 import { SignInUp } from "@/enum";
+import CONST from "@/const";
+import { useGlobalDispatch } from "@/context";
 
 export type Props = {
   type?: SignInUp.Login | SignInUp.SignUp;
 };
 
 export default function AuthForm({ type = SignInUp.Login }: Props) {
+  const dispatch = useGlobalDispatch();
   const isLogin = type === SignInUp.Login;
   const router = useRouter();
   const handleSubmit = async (event: FormEvent) => {
@@ -26,6 +29,11 @@ export default function AuthForm({ type = SignInUp.Login }: Props) {
 
     const result = await response.json();
     if (result.valid) {
+      const userInfo: object = result.data;
+      console.log(userInfo, "====userInfo===");
+
+      dispatch(userInfo);
+      localStorage.setItem(CONST.USER_INFO, JSON.stringify(userInfo));
       router.push(`/${username}`);
     } else {
       alert(result.msg);

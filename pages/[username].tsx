@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import type { Tweet } from "@/type";
+import CONST from "@/const";
 
 type Props = {
   username: String;
@@ -24,6 +25,10 @@ function TimeLine({ username }: Props) {
   }
   async function createTweet() {
     const content = prompt("New Tweet");
+    if (!content) {
+      return;
+    }
+    const userInfo = localStorage.getItem(CONST.USER_INFO);
     await fetch("/api/tweet", {
       method: "POST",
       headers: {
