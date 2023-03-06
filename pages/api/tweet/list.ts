@@ -1,13 +1,14 @@
 
 import type { NextApiRequest, NextApiResponse } from 'next'
-import tweetDB from '@/db/tweet'
+import { getData } from '@/utils/server'
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   const { method } = req
   if (method === 'GET') {
+    const tweetDB = await getData('/tweet.json')
     res.status(200).json({
       valid: true,
       data: tweetDB.reverse()

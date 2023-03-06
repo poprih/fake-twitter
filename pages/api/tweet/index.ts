@@ -1,6 +1,6 @@
 
 import type { NextApiRequest, NextApiResponse } from 'next'
-import tweetDB from '@/db/tweet'
+import { getData, setData } from '@/utils/server'
 
 export default function handler(
   req: NextApiRequest,
@@ -15,17 +15,19 @@ export default function handler(
   }
 }
 
-function createNewTweet(req: NextApiRequest, res: NextApiResponse) {
+async function createNewTweet(req: NextApiRequest, res: NextApiResponse) {
   const { content, userId, username } = req.body
   const now = new Date()
   const id = `${now.getTime()}_${userId}`
+  const tweetDB = await getData('/tweet.json')
   tweetDB.push({
     content,
     id,
     userId,
     username,
     updateTime: '',
-    createTime: now.toUTCString(),
+    createTime: now.toISOString(),
   })
+  await setData('/tweet.json', tweetDB)
   res.status(200).json({ valid: true })
 }

@@ -3,7 +3,7 @@ import React from "react";
 
 const GlobalContext = createContext({});
 
-const GlobalDispatchContext = createContext({});
+const GlobalDispatchContext = createContext(() => {});
 
 export const GlobalProvider: React.FC = ({ children }) => {
   const [global, dispatch] = useReducer(globalReducer, initialGlobalState);

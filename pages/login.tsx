@@ -10,7 +10,7 @@ function Login() {
       <div className="mt-2">
         Do not have an account?
         <Link href="/signup" className="text-cyan-400">
-          Sign up
+          Sign Up
         </Link>
       </div>
     </div>

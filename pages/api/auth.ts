@@ -2,9 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { SignInUp } from '@/enum'
 import type { User } from '@/type'
-import fs from 'fs'
-import path from 'path'
-const jsonDirectory = path.join(process.cwd(), 'db');
+import { getData, setData } from '@/utils/server'
 
 export type AuthInfo = {
   username: string,
@@ -27,9 +25,7 @@ export default async function handler(
 ) {
   if (req.method === 'POST') {
     const { username, password, type } = req.body as AuthInfo
-    const userDBPath = jsonDirectory + '/user.json'
-    const userJson = await fs.readFileSync(userDBPath, 'utf-8');
-    const userDB: User[] = JSON.parse(userJson)
+    const userDB: User[] = await getData('/user.json')
     const userInfo: User | undefined = userDB.find(_ => _.username === username)
     if (type === SignInUp.Login) {
       if (!userInfo) {
@@ -56,7 +52,7 @@ export default async function handler(
           username,
           password
         })
-        await fs.writeFileSync(userDBPath, JSON.stringify(userDB))
+        await setData('/user.json', userDB)
         res.status(200).json({
           valid: true,
           token: '',

@@ -10,7 +10,7 @@ const Signup = () => {
       <div className="mt-2">
         Already have an account?
         <Link href="/login" className="text-cyan-400">
-          Sign up
+          Sign In
         </Link>
       </div>
     </div>

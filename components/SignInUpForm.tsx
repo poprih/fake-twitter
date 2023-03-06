@@ -30,9 +30,7 @@ export default function AuthForm({ type = SignInUp.Login }: Props) {
     const result = await response.json();
     if (result.valid) {
       const userInfo: object = result.data;
-      console.log(userInfo, "====userInfo===");
-
-      dispatch(userInfo);
+      dispatch({ userInfo });
       localStorage.setItem(CONST.USER_INFO, JSON.stringify(userInfo));
       router.push(`/${username}`);
     } else {

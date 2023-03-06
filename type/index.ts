@@ -10,5 +10,10 @@ export type Tweet = {
 export type User = {
   id: number,
   username: string,
-  password: string
+  password?: string
+}
+
+
+export type GlobalState = {
+  userInfo?: User
 }
