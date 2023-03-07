@@ -4,7 +4,7 @@ import Link from "next/link";
 
 function Login() {
   return (
-    <div className="min-h-screen p-6">
+    <div className="p-6">
       <h1 className="text-center text-lg">Sign In Fake Twitter</h1>
       <SignInUpForm />
       <div className="mt-2">

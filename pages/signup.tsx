@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const Signup = () => {
   return (
-    <div className="min-h-screen p-6">
+    <div className="p-6">
       <h1 className="text-center text-lg">Sign Up Fake Twitter</h1>
       <SignInUpForm type={SignInUp.SignUp} />
       <div className="mt-2">

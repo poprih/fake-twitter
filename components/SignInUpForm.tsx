@@ -41,7 +41,7 @@ export default function AuthForm({ type = SignInUp.Login }: Props) {
   return (
     <form onSubmit={handleSubmit}>
       <label className="block">
-        <span className="text-gray-700">User Name</span>
+        <span>User Name</span>
         <input
           type="text"
           required
@@ -51,15 +51,15 @@ export default function AuthForm({ type = SignInUp.Login }: Props) {
                 block
                 w-full
                 rounded-md
-                border-gray-300
                 shadow-sm
+                dark:text-black
                 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
               "
           placeholder=""
         />
       </label>
       <label className="block">
-        <span className="text-gray-700">Password</span>
+        <span>Password</span>
         <input
           type="password"
           required
@@ -71,6 +71,7 @@ export default function AuthForm({ type = SignInUp.Login }: Props) {
                 rounded-md
                 border-gray-300
                 shadow-sm
+                dark:text-black
                 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
               "
           placeholder=""

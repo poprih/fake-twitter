@@ -16,10 +16,10 @@ export const GlobalProvider: React.FC = ({ children }) => {
   );
 };
 
-function globalReducer(state: object, action: object) {
+function globalReducer(state: object, newState: object) {
   return {
     ...state,
-    ...action,
+    ...newState,
   };
 }
 

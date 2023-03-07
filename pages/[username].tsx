@@ -6,12 +6,8 @@ import { useRouter } from "next/router";
 import CONST from "@/const";
 import d from "dayjs";
 
-type Props = {
-  username: String;
-};
-
-function TimeLine({ username }: Props) {
-  const [tweetList, setTweetList] = useState<Tweet[] | null>([]);
+function TimeLine() {
+  const [tweetList, setTweetList] = useState<Tweet[] | []>([]);
   const [pageNo, setPageNo] = useState(1);
   const dispatch = useGlobalDispatch();
   const globalState: GlobalState = useGlobal();
@@ -20,20 +16,13 @@ function TimeLine({ username }: Props) {
     getTweets();
     return () => {};
   }, [pageNo]);
-  useEffect(() => {
-    const uInfo = localStorage.getItem(CONST.USER_INFO);
-    if (uInfo) {
-      dispatch({ userInfo: JSON.parse(uInfo) });
-    }
-    return () => {};
-  }, []);
   async function getTweets() {
-    const res = await fetch("/api/tweet/list", {
+    const res = await fetch(`/api/tweet/list?pageNo=${pageNo}`, {
       method: "GET",
     });
-    const { valid, data } = await res.json();
+    const { valid, data, total } = await res.json();
     if (valid) {
-      setTweetList(data);
+      setTweetList([...tweetList, ...data]);
     }
   }
   async function createTweet() {
@@ -55,7 +44,37 @@ function TimeLine({ username }: Props) {
     });
     getTweets();
   }
-  async function deleteTweet(tId: string) {}
+  async function deleteTweet(tId: string) {
+    const yes = confirm("Are you sure?");
+    if (yes) {
+      await fetch("/api/tweet", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: tId }),
+      });
+      getTweets();
+    }
+  }
+  async function editTweet(oldTweet: Tweet) {
+    const { content, id } = oldTweet;
+    const newContent = prompt("Edit Tweet", content);
+    if (!newContent) {
+      return;
+    }
+    await fetch("/api/tweet", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        content: newContent,
+        id,
+      }),
+    });
+    getTweets();
+  }
   async function logout() {
     const yes = confirm("Are you sure?");
     if (yes) {
@@ -66,40 +85,41 @@ function TimeLine({ username }: Props) {
   }
   if (tweetList?.length) {
     return (
-      <div className="min-h-screen">
+      <>
         <h1 className="text-center text-2xl p-4">My Timeline Page</h1>
-        <ul className="p-4">
+        <ul className="p-4 flex w-screen flex-wrap">
           {tweetList.map((_) => {
             return (
-              <li key={_.id} className="h-24 border-b-2 mb-4">
+              <li key={_.id} className="h-24 border-b-2 mb-4 md:w-[50%] w-full">
                 <div className="flex h-full">
                   <div className="w-12 h-12 rounded-3xl bg-slate-400 flex justify-center items-center">
                     {_.username[0]}
                   </div>
                   <div className="flex flex-col flex-1 ml-2 justify-between">
+                    <div className="text-xl">{_.username}</div>
+                    <Link href={`/tweet/${_.id}`} className="mt-2">
+                      {_.content}
+                    </Link>
                     <div className="flex justify-between">
-                      <div className="text-xl">{_.username}</div>
+                      <span className="text-sm text-gray-400">
+                        {d(_.createTime).format("YYYY-MM-DD HH:mm:ss")}
+                      </span>
                       <button
-                        className={`text-sm bg-green-300 p-1 rounded ${
+                        className={`text-sm bg-green-300 px-1 rounded ${
                           _.userId === globalState.userInfo?.id ? "" : "hidden"
                         }`}
+                        onClick={() => editTweet(_)}
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => deleteTweet(_.id)}
-                        className={`text-sm bg-red-300 p-1 rounded ${
+                        className={`text-sm bg-red-300 px-1 rounded ${
                           _.userId === globalState.userInfo?.id ? "" : "hidden"
                         }`}
                       >
                         Delete
                       </button>
-                    </div>
-                    <Link href={`/tweet/${_.id}`} className="mt-2">
-                      {_.content}
-                    </Link>
-                    <div className="text-sm text-gray-400">
-                      {d(_.createTime).format("YYYY-MM-DD HH:mm:ss")}
                     </div>
                   </div>
                 </div>
@@ -121,7 +141,7 @@ function TimeLine({ username }: Props) {
             Post
           </div>
         </div>
-      </div>
+      </>
     );
   } else {
     return <div>loading...</div>;
