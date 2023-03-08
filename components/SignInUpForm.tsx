@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { SignInUp } from "@/enum";
 import CONST from "@/const";
 import { useGlobalDispatch } from "@/context";
+import type { User } from "@/type";
 
 export type Props = {
   type?: SignInUp.Login | SignInUp.SignUp;
@@ -29,7 +30,7 @@ export default function AuthForm({ type = SignInUp.Login }: Props) {
 
     const result = await response.json();
     if (result.valid) {
-      const userInfo: object = result.data;
+      const userInfo: User = result.data;
       dispatch({ userInfo });
       localStorage.setItem(CONST.USER_INFO, JSON.stringify(userInfo));
       router.push(`/${username}`);
@@ -46,7 +47,7 @@ export default function AuthForm({ type = SignInUp.Login }: Props) {
           type="text"
           required
           name="username"
-          className="block w-full mt-1 rounded-md shadow-sm  dark:text-black focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          className="block w-full mt-1 rounded-md shadow-sm dark:text-black focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           placeholder=""
         />
       </label>
@@ -56,7 +57,7 @@ export default function AuthForm({ type = SignInUp.Login }: Props) {
           type="password"
           required
           name="password"
-          className="block w-full mt-1 rounded-md shadow-sm  dark:text-black focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          className="block w-full mt-1 rounded-md shadow-sm dark:text-black focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           placeholder=""
         />
       </label>
