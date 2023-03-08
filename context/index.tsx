@@ -1,11 +1,16 @@
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useReducer, Dispatch } from "react";
 import React from "react";
+import type { User } from "@/type";
 
-const GlobalContext = createContext({});
+const GlobalContext = createContext<{ userInfo?: User }>({});
 
-const GlobalDispatchContext = createContext(() => {});
-
-export const GlobalProvider: React.FC = ({ children }) => {
+const GlobalDispatchContext = createContext<Dispatch<{}> | undefined>(
+  () => null
+);
+interface Props {
+  children: React.ReactNode;
+}
+export const GlobalProvider = ({ children }: Props) => {
   const [global, dispatch] = useReducer(globalReducer, initialGlobalState);
   return (
     <GlobalContext.Provider value={global}>

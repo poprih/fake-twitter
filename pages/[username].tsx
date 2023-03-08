@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, Dispatch } from "react";
 import Link from "next/link";
 import type { Tweet, GlobalState, User } from "@/type";
 import { useGlobal, useGlobalDispatch } from "@/context";
@@ -9,20 +9,20 @@ import d from "dayjs";
 function TimeLine() {
   const [tweetList, setTweetList] = useState<Tweet[] | []>([]);
   const [pageNo, setPageNo] = useState(1);
-  const dispatch = useGlobalDispatch();
+  const dispatch = useGlobalDispatch() as Dispatch<{}>;
   const globalState: GlobalState = useGlobal();
   const router = useRouter();
   useEffect(() => {
     getTweets();
     return () => {};
   }, [pageNo]);
-  async function getTweets() {
-    const res = await fetch(`/api/tweet/list?pageNo=${pageNo}`, {
+  async function getTweets(pageNo?: number) {
+    const res = await fetch(`/api/tweet/list?pageNo=${pageNo || 1}`, {
       method: "GET",
     });
     const { valid, data, total } = await res.json();
     if (valid) {
-      setTweetList([...tweetList, ...data]);
+      pageNo ? setTweetList([...tweetList, ...data]) : setTweetList(data);
     }
   }
   async function createTweet() {
@@ -86,18 +86,21 @@ function TimeLine() {
   if (tweetList?.length) {
     return (
       <>
-        <h1 className="text-center text-2xl p-4">My Timeline Page</h1>
-        <ul className="p-4 flex w-screen flex-wrap">
+        <h1 className="p-4 text-2xl text-center">My Timeline Page</h1>
+        <ul className="flex flex-wrap w-screen p-4">
           {tweetList.map((_) => {
             return (
-              <li key={_.id} className="h-24 border-b-2 mb-4 md:w-[50%] w-full">
+              <li key={_.id} className="border-b-2 mb-4 md:w-[50%] w-full pb-2">
                 <div className="flex h-full">
-                  <div className="w-12 h-12 rounded-3xl bg-slate-400 flex justify-center items-center">
+                  <div className="flex items-center justify-center w-12 h-12 text-2xl text-white bg-black rounded-3xl">
                     {_.username[0]}
                   </div>
-                  <div className="flex flex-col flex-1 ml-2 justify-between">
+                  <div className="flex flex-col justify-between flex-1 ml-2">
                     <div className="text-xl">{_.username}</div>
-                    <Link href={`/tweet/${_.id}`} className="mt-2">
+                    <Link
+                      href={`/tweet/${_.id}`}
+                      className="my-2 overflow-hidden break-all text-ellipsis line-clamp-3"
+                    >
                       {_.content}
                     </Link>
                     <div className="flex justify-between">
@@ -127,16 +130,16 @@ function TimeLine() {
             );
           })}
         </ul>
-        <div className="fixed bottom-4 flex justify-between w-full p-8">
+        <div className="fixed flex justify-between w-full p-8 bottom-4">
           <div
             onClick={logout}
-            className="text-blue-50 rounded flex justify-center items-center w-14 h-14 bg-red-400"
+            className="flex items-center justify-center bg-red-400 rounded text-blue-50 w-14 h-14"
           >
             Logout
           </div>
           <div
             onClick={createTweet}
-            className="text-blue-50 rounded flex justify-center items-center bg-blue-300 w-14 h-14"
+            className="flex items-center justify-center bg-blue-300 rounded text-blue-50 w-14 h-14"
           >
             Post
           </div>
