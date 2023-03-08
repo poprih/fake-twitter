@@ -5,24 +5,33 @@ import { useGlobal, useGlobalDispatch } from "@/context";
 import { useRouter } from "next/router";
 import CONST from "@/const";
 import d from "dayjs";
+import { useInView } from "react-cool-inview";
 
 function TimeLine() {
   const [tweetList, setTweetList] = useState<Tweet[] | []>([]);
   const [pageNo, setPageNo] = useState(1);
+  const [total, setTotal] = useState(0);
   const dispatch = useGlobalDispatch() as Dispatch<{}>;
   const globalState: GlobalState = useGlobal();
   const router = useRouter();
   useEffect(() => {
-    getTweets();
+    getTweets(pageNo !== 1);
     return () => {};
   }, [pageNo]);
-  async function getTweets(pageNo?: number) {
-    const res = await fetch(`/api/tweet/list?pageNo=${pageNo || 1}`, {
+  async function getTweets(loadMore?: boolean) {
+    const res = await fetch(`/api/tweet/list?pageNo=${pageNo}`, {
       method: "GET",
     });
-    const { valid, data, total } = await res.json();
+    const {
+      valid,
+      data,
+      total,
+    }: { valid: boolean; data?: Tweet[]; total?: number } = await res.json();
     if (valid) {
-      pageNo ? setTweetList([...tweetList, ...data]) : setTweetList(data);
+      setTotal(total as number);
+      !loadMore
+        ? setTweetList(data as Tweet[])
+        : setTweetList([...tweetList, ...(data as Tweet[])]);
     }
   }
   async function createTweet() {
@@ -42,19 +51,25 @@ function TimeLine() {
         username, // todo: may get from server session
       }),
     });
-    getTweets();
+    pageNo === 1 ? getTweets(false) : setPageNo(1);
+    window.scrollTo(0, 0);
   }
   async function deleteTweet(tId: string) {
     const yes = confirm("Are you sure?");
     if (yes) {
-      await fetch("/api/tweet", {
+      const res = await fetch("/api/tweet", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ id: tId }),
       });
-      getTweets();
+      const { valid } = await res.json();
+      if (valid) {
+        const newList = tweetList.filter((_) => _.id !== tId);
+        setTotal(total - 1);
+        setTweetList(newList);
+      }
     }
   }
   async function editTweet(oldTweet: Tweet) {
@@ -63,7 +78,7 @@ function TimeLine() {
     if (!newContent) {
       return;
     }
-    await fetch("/api/tweet", {
+    const res = await fetch("/api/tweet", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -73,7 +88,19 @@ function TimeLine() {
         id,
       }),
     });
-    getTweets();
+    const { valid } = await res.json();
+    if (valid) {
+      const newList = tweetList.map((_) => {
+        if (_.id === id) {
+          return {
+            ..._,
+            content: newContent,
+          };
+        }
+        return { ..._ };
+      });
+      setTweetList(newList);
+    }
   }
   async function logout() {
     const yes = confirm("Are you sure?");
@@ -83,14 +110,25 @@ function TimeLine() {
       router.push("/signup");
     }
   }
+  const { observe } = useInView({
+    rootMargin: "50px 0px",
+    onEnter: ({ unobserve }) => {
+      setPageNo(pageNo + 1);
+      unobserve();
+    },
+  });
   if (tweetList?.length) {
     return (
       <>
         <h1 className="p-4 text-2xl text-center">My Timeline Page</h1>
         <ul className="flex flex-wrap w-screen p-4">
-          {tweetList.map((_) => {
+          {tweetList.map((_, idx) => {
             return (
-              <li key={_.id} className="border-b-2 mb-4 md:w-[50%] w-full pb-2">
+              <li
+                key={_.id}
+                className="border-b-2 mb-4 md:w-[50%] w-full pb-2"
+                ref={idx === tweetList.length - 1 ? observe : null}
+              >
                 <div className="flex h-full">
                   <div className="flex items-center justify-center w-12 h-12 text-2xl text-white bg-black dark:bg-white dark:text-black rounded-3xl">
                     {_.username[0]}
@@ -130,6 +168,9 @@ function TimeLine() {
             );
           })}
         </ul>
+        {total === tweetList.length && (
+          <div className="text-center">no more data</div>
+        )}
         <div className="fixed flex justify-between w-full p-8 bottom-4">
           <div
             onClick={logout}

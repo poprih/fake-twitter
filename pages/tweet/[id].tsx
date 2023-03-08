@@ -23,15 +23,19 @@ export default function TweetDetail() {
     <div className="p-4">
       <h1 className="text-xl text-center">Tweet Detail</h1>
       <div>
-        <span className="text-xl text-cyan-300">creator: </span>
+        <span className="text-xl text-cyan-300">Tweet Id: </span>
+        <span className="break-words">{data?.id}</span>
+      </div>
+      <div>
+        <span className="text-xl text-cyan-300">Creator: </span>
         <span className="break-words">{data?.username}</span>
       </div>
       <div>
-        <span className="text-xl text-cyan-300">content: </span>
+        <span className="text-xl text-cyan-300">Content: </span>
         <span className="break-words">{data?.content}</span>
       </div>
       <div>
-        <span className="text-xl text-cyan-300">create time: </span>
+        <span className="text-xl text-cyan-300">Create Time: </span>
         <span className="break-words">
           {data && d(data.createTime).format("YYYY-MM-DD HH:mm:ss")}
         </span>

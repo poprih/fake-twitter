@@ -12,7 +12,9 @@ export default async function handler(
     const tweetDB: Tweet[] | [] = await getData('/tweet.json')
     const pageNo = (req.query.pageNo || 1) as number
     const pageSize = 10 // default
-    const data = tweetDB.reverse().slice((pageNo - 1) * pageSize, pageSize)
+    const index = (pageNo - 1) * pageSize
+    const data = tweetDB.reverse().slice(index, pageSize + index)
+    console.log(data.length, tweetDB.length, (pageNo - 1) * pageSize, pageSize, '===pageNo===');
     res.status(200).json({
       valid: true,
       data,
