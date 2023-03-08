@@ -92,7 +92,7 @@ function TimeLine() {
             return (
               <li key={_.id} className="border-b-2 mb-4 md:w-[50%] w-full pb-2">
                 <div className="flex h-full">
-                  <div className="flex items-center justify-center w-12 h-12 text-2xl text-white bg-black rounded-3xl">
+                  <div className="flex items-center justify-center w-12 h-12 text-2xl text-white bg-black dark:bg-white dark:text-black rounded-3xl">
                     {_.username[0]}
                   </div>
                   <div className="flex flex-col justify-between flex-1 ml-2">

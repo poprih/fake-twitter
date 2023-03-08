@@ -1,12 +1,10 @@
 import { createContext, useContext, useReducer, Dispatch } from "react";
 import React from "react";
-import type { User } from "@/type";
+import type { GlobalState } from "@/type";
 
-const GlobalContext = createContext<{ userInfo?: User }>({});
+const GlobalContext = createContext<GlobalState>({});
 
-const GlobalDispatchContext = createContext<Dispatch<{}> | undefined>(
-  () => null
-);
+const GlobalDispatchContext = createContext<Dispatch<GlobalState>>(() => null);
 interface Props {
   children: React.ReactNode;
 }

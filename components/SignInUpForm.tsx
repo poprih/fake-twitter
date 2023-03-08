@@ -46,15 +46,7 @@ export default function AuthForm({ type = SignInUp.Login }: Props) {
           type="text"
           required
           name="username"
-          className="
-                mt-1
-                block
-                w-full
-                rounded-md
-                shadow-sm
-                dark:text-black
-                focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
-              "
+          className="block w-full mt-1 rounded-md shadow-sm  dark:text-black focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           placeholder=""
         />
       </label>
@@ -64,22 +56,13 @@ export default function AuthForm({ type = SignInUp.Login }: Props) {
           type="password"
           required
           name="password"
-          className="
-                mt-1
-                block
-                w-full
-                rounded-md
-                border-gray-300
-                shadow-sm
-                dark:text-black
-                focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
-              "
+          className="block w-full mt-1 rounded-md shadow-sm  dark:text-black focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           placeholder=""
         />
       </label>
       <button
         type="submit"
-        className="w-full bg-sky-400 text-white mt-4 h-12 rounded-md"
+        className="w-full h-12 mt-4 text-white rounded-md bg-sky-400"
       >
         {isLogin ? "Sign In" : "Sign Up"}
       </button>

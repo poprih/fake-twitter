@@ -21,11 +21,20 @@ export default function TweetDetail() {
   }, [router.query.id]);
   return (
     <div className="p-4">
-      <h1 className="text-center text-xl">Tweet Detail</h1>
-      <div>creator: {data?.username}</div>
-      <div>content: {data?.content}</div>
+      <h1 className="text-xl text-center">Tweet Detail</h1>
       <div>
-        create time: {data && d(data.createTime).format("YYYY-MM-DD HH:mm:ss")}
+        <span className="text-xl text-cyan-300">creator: </span>
+        <span className="break-words">{data?.username}</span>
+      </div>
+      <div>
+        <span className="text-xl text-cyan-300">content: </span>
+        <span className="break-words">{data?.content}</span>
+      </div>
+      <div>
+        <span className="text-xl text-cyan-300">create time: </span>
+        <span className="break-words">
+          {data && d(data.createTime).format("YYYY-MM-DD HH:mm:ss")}
+        </span>
       </div>
     </div>
   );

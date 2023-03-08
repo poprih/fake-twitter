@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import CONST from "@/const";
 import { useGlobalDispatch } from "@/context";
+import { useRouter } from "next/router";
 
 const dark = (
   <svg
@@ -52,12 +53,23 @@ function Layout({ children }: Props) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const dispatch = useGlobalDispatch();
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
     const uInfo = localStorage.getItem(CONST.USER_INFO);
     if (uInfo) {
-      dispatch({ userInfo: JSON.parse(uInfo) });
+      const userInfo = JSON.parse(uInfo);
+      dispatch({ userInfo });
+      if (
+        router.asPath === "/login" ||
+        router.asPath === "/signup" ||
+        router.asPath !== `/${userInfo.username}`
+      ) {
+        router.replace(`/${userInfo.username}`);
+      }
+    } else {
+      router.replace("/login");
     }
   }, []);
   return (
