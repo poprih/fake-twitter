@@ -14,7 +14,6 @@ export default async function handler(
     const pageSize = 10 // default
     const index = (pageNo - 1) * pageSize
     const data = tweetDB.reverse().slice(index, pageSize + index)
-    console.log(data.length, tweetDB.length, (pageNo - 1) * pageSize, pageSize, '===pageNo===');
     res.status(200).json({
       valid: true,
       data,
