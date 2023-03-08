@@ -1,8 +1,7 @@
 import path from "path";
 import fs from 'fs'
 
-const DBPATH = path.join(process.cwd(), 'db');
-
+const DBPATH = process.env.NODE_ENV === 'development' ? path.join(process.cwd(), 'db') : '/tmp/';
 
 export async function getData(relativePath: string) {
   const jsonData = await fs.readFileSync(DBPATH + relativePath, 'utf-8')
